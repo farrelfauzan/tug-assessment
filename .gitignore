@@ -1,0 +1,22 @@
+node_modules/
+
+# Build artifacts
+dist/
+.next/
+.expo/
+coverage/
+
+# Environment files
+.env
+.env.*
+!.env.example
+apps/backend/.env
+apps/backend/env/.env.local
+apps/backend/env/.env.development
+apps/backend/env/.env.staging
+apps/backend/env/.env.production
+
+# OS/editor
+.DS_Store
+*.log
+*.tsbuildinfo
