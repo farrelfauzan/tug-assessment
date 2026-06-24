@@ -1,0 +1,27 @@
+{
+  "name": "mobile",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "expo start",
+    "build": "tsc --noEmit",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "node -e \"console.log('mobile tests not implemented yet')\""
+  },
+  "dependencies": {
+    "@tug/api-schemas": "workspace:*",
+    "@tug/utils": "workspace:*",
+    "expo": "^51.0.31",
+    "expo-status-bar": "~1.12.1",
+    "react": "18.2.0",
+    "react-native": "0.74.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.8",
+    "typescript": "^5.5.4"
+  }
+}

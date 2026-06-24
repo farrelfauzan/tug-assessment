@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String         @id @default(uuid())
+  email          String         @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  phone          String?
+  role           UserRole       @default(USER)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  deletedAt      DateTime?
+  orders         Order[]
+  reviews        Review[]
+  payments       Payment[]
+  subscriptions  Subscription[]
+
+  @@index([role])
+}
+
+model WellnessPackage {
+  id             String          @id @default(uuid())
+  name           String
+  description    String
+  price          Decimal         @db.Decimal(10, 2)
+  durationWeeks  Int
+  status         PackageStatus   @default(DRAFT)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+  orders         Order[]
+  reviews        Review[]
+  subscriptions  Subscription[]
+  orderItems     OrderItem[]
+
+  @@index([name])
+  @@index([status])
+  @@index([price])
+}
+
+model Order {
+  id                String          @id @default(uuid())
+  userId            String
+  wellnessPackageId String
+  status            OrderStatus     @default(PENDING)
+  totalAmount       Decimal         @db.Decimal(10, 2)
+  orderDate         DateTime        @default(now())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  deletedAt         DateTime?
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wellnessPackage   WellnessPackage @relation(fields: [wellnessPackageId], references: [id])
+  items             OrderItem[]
+  payment           Payment?
+
+  @@index([userId])
+  @@index([wellnessPackageId])
+  @@index([status])
+  @@index([orderDate])
+  @@index([userId, orderDate])
+  @@index([status, createdAt])
+}
+
+model OrderItem {
+  id                String          @id @default(uuid())
+  orderId           String
+  wellnessPackageId String
+  quantity          Int
+  unitPrice         Decimal         @db.Decimal(10, 2)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  wellnessPackage   WellnessPackage @relation(fields: [wellnessPackageId], references: [id])
+
+  @@index([orderId])
+  @@index([wellnessPackageId])
+}
+
+model Review {
+  id                String          @id @default(uuid())
+  userId            String
+  wellnessPackageId String
+  rating            Int
+  comment           String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  deletedAt         DateTime?
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wellnessPackage   WellnessPackage @relation(fields: [wellnessPackageId], references: [id])
+
+  @@index([userId])
+  @@index([wellnessPackageId])
+  @@index([wellnessPackageId, rating])
+}
+
+model Payment {
+  id             String          @id @default(uuid())
+  orderId        String          @unique
+  userId         String
+  amount         Decimal         @db.Decimal(10, 2)
+  provider       PaymentProvider
+  status         PaymentStatus
+  transactionId  String?
+  paidAt         DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Subscription {
+  id                String             @id @default(uuid())
+  userId            String
+  wellnessPackageId String
+  status            SubscriptionStatus
+  startDate         DateTime
+  endDate           DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wellnessPackage   WellnessPackage    @relation(fields: [wellnessPackageId], references: [id])
+
+  @@index([userId])
+  @@index([wellnessPackageId])
+  @@index([status])
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum PackageStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+  CREDIT_CARD
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING
+}
