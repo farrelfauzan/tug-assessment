@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "vitest run src/test/e2e/**/*.spec.ts",
+    "test:e2e": "vitest run src/test/e2e/app-health.e2e.spec.ts src/test/e2e/auth-login.e2e.spec.ts src/test/e2e/wellness-packages.e2e.spec.ts src/test/e2e/orders.e2e.spec.ts src/test/e2e/reviews.e2e.spec.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed"
