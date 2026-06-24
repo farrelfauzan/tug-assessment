@@ -12,7 +12,6 @@ type CreatedReview = {
 };
 
 export type CreateReviewPayload = {
-  userId: string;
   wellnessPackageId: string;
   rating: number;
   comment?: string;

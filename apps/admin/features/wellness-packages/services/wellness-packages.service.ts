@@ -26,7 +26,22 @@ export type WellnessPackageList = {
   };
 };
 
+export type CreateWellnessPackagePayload = {
+  name: string;
+  description: string;
+  price: number;
+  durationWeeks: number;
+  status: 'DRAFT' | 'ACTIVE';
+};
+
 export async function listWellnessPackages(): Promise<WellnessPackageList> {
   const response = await api.get<ApiSuccess<WellnessPackageList>>('/wellness-packages');
+  return response.data.data;
+}
+
+export async function createWellnessPackage(
+  payload: CreateWellnessPackagePayload
+): Promise<WellnessPackageItem> {
+  const response = await api.post<ApiSuccess<WellnessPackageItem>>('/wellness-packages', payload);
   return response.data.data;
 }

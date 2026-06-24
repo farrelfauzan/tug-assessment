@@ -30,13 +30,13 @@ import { WellnessPackagesService } from './services/wellness-packages.service';
 
 @Controller('wellness-packages')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
 @ApiTags('wellness-packages')
 @ApiBearerAuth()
 export class WellnessPackagesController {
   constructor(private readonly wellnessPackagesService: WellnessPackagesService) {}
 
   @Get()
+  @Roles('ADMIN', 'USER')
   async list(@Query() query: WellnessPackagesListQueryDto) {
     const data = await this.wellnessPackagesService.list(query as WellnessPackageListQuery);
     return {
@@ -46,6 +46,7 @@ export class WellnessPackagesController {
   }
 
   @Get(':id')
+  @Roles('ADMIN', 'USER')
   async getById(@Param('id') id: string) {
     const parsed = wellnessPackageIdSchema.parse({ id });
     const data = await this.wellnessPackagesService.getById(parsed.id);
@@ -56,6 +57,7 @@ export class WellnessPackagesController {
   }
 
   @Post()
+  @Roles('ADMIN')
   async create(@Body() body: CreateWellnessPackageDto) {
     const data = await this.wellnessPackagesService.create(body as CreateWellnessPackageInput);
     return {
@@ -65,6 +67,7 @@ export class WellnessPackagesController {
   }
 
   @Patch(':id')
+  @Roles('ADMIN')
   async update(@Param('id') id: string, @Body() body: UpdateWellnessPackageDto) {
     const parsed = wellnessPackageIdSchema.parse({ id });
     const data = await this.wellnessPackagesService.update(
@@ -78,6 +81,7 @@ export class WellnessPackagesController {
   }
 
   @Delete(':id')
+  @Roles('ADMIN')
   async remove(@Param('id') id: string) {
     const parsed = wellnessPackageIdSchema.parse({ id });
     return {

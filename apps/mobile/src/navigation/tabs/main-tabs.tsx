@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ProfileScreen } from '../../features/profile/screens/profile-screen';
-import { ReviewsListScreen } from '../../features/reviews/screens/reviews-list-screen';
 import { OrdersStack } from '../stacks/orders-stack';
 import { PackagesStack } from '../stacks/packages-stack';
 import type { MainTabParamList } from '../types';
@@ -30,16 +29,6 @@ export function MainTabs(): JSX.Element {
           title: 'Orders',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="clipboard-list-outline" color={color} size={size} />
-          )
-        }}
-      />
-      <Tab.Screen
-        name="Reviews"
-        component={ReviewsListScreen}
-        options={{
-          title: 'Reviews',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="star-outline" color={color} size={size} />
           )
         }}
       />

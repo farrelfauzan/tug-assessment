@@ -93,7 +93,13 @@ describe('ReviewsService', () => {
     });
     repository.averageRating = vi.fn().mockResolvedValue(5);
 
-    const result = await service.list({ page: 1, limit: 20 });
+    const result = await service.list(
+      { page: 1, limit: 20 },
+      {
+        id: 'admin-1',
+        role: 'ADMIN'
+      }
+    );
 
     expect(result.items).toHaveLength(1);
     expect(result.averageRating).toBe(5);

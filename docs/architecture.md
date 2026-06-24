@@ -76,6 +76,15 @@ The Wellness Package Management System is a Full Stack application built with Cl
 6. **Logging**: Structured JSON logging with Winston/Pino
 7. **Monitoring**: Health check endpoints for load balancers
 
+### Product Scope (Current)
+
+- **Admin portal scope**: create wellness packages, view orders, view reviews.
+- **Mobile app scope**: browse/list wellness packages, create orders, create reviews.
+- **Authorization model**:
+  - `ADMIN` can manage package lifecycle and operational visibility.
+  - `USER` can create user actions (orders/reviews) and read only own orders/reviews.
+- **Identity rule**: write actions owned by users derive actor identity from JWT; client-provided `userId` is ignored/rejected by contract.
+
 ## Repository Structure
 
 ```

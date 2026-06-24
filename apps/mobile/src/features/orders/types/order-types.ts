@@ -41,7 +41,6 @@ export type OrdersListResponse = {
 };
 
 export type CreateOrderPayload = {
-  userId: string;
   wellnessPackageId: string;
   quantity: number;
   paymentProvider: 'STRIPE' | 'PAYPAL' | 'CREDIT_CARD' | 'BANK_TRANSFER';

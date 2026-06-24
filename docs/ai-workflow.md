@@ -73,6 +73,11 @@ Mobile-specific corrections:
 - Authenticated requests initially missed `Authorization: Bearer <token>` headers; centralized Axios interceptor/token setter was added.
 - Login session was initially in-memory only; persistence and hydration were added via AsyncStorage so refresh does not force logout.
 
+Scope and API-contract corrections:
+- Clarified product scope split: mobile handles package browsing + order/review creation, while admin handles package creation and order/review visibility.
+- Fixed role boundaries in backend controllers so `USER` can access user-facing operations and `ADMIN` retains management operations.
+- Removed `userId` from create-order/create-review request schemas and enforced JWT-derived identity on backend.
+
 ## Where We Chose NOT To Use AI
 
 - **Final UX judgment and acceptance sign-off**

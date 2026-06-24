@@ -2,6 +2,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getJwtSecret } from '../../../shared/auth/jwt.config';
 import { AuthRepository } from '../repositories/auth.repository';
 import { AuthService } from './auth.service';
 
@@ -10,6 +11,10 @@ vi.mock('bcryptjs', () => ({
     compare: vi.fn(),
     hash: vi.fn()
   }
+}));
+
+vi.mock('../../../shared/auth/jwt.config', () => ({
+  getJwtSecret: vi.fn()
 }));
 
 describe('AuthService', () => {
@@ -29,6 +34,7 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(getJwtSecret).mockReturnValue('test-jwt-secret');
     service = new AuthService(authRepository, jwtService);
   });
 

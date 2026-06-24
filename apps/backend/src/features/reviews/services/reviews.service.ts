@@ -24,11 +24,16 @@ type ReviewResponse = {
   updatedAt: string;
 };
 
+type RequestActor = {
+  id: string;
+  role: 'ADMIN' | 'USER';
+};
+
 @Injectable()
 export class ReviewsService {
   constructor(private readonly reviewsRepository: ReviewsRepository) {}
 
-  async create(input: CreateReviewInput): Promise<ReviewResponse> {
+  async create(input: CreateReviewInput & { userId: string }): Promise<ReviewResponse> {
     const [userExists, packageExists] = await Promise.all([
       this.reviewsRepository.userExists(input.userId),
       this.reviewsRepository.packageExists(input.wellnessPackageId)
@@ -52,7 +57,7 @@ export class ReviewsService {
     return this.toResponse(created);
   }
 
-  async list(query: ListReviewsQuery): Promise<{
+  async list(query: ListReviewsQuery, actor: RequestActor): Promise<{
     items: ReviewResponse[];
     averageRating: number | null;
     pagination: {
@@ -72,11 +77,13 @@ export class ReviewsService {
         skip: pagination.offset,
         take: pagination.limit,
         rating: query.rating,
-        packageId: query.packageId
+        packageId: query.packageId,
+        userId: actor.role === 'USER' ? actor.id : undefined
       }),
       this.reviewsRepository.averageRating({
         rating: query.rating,
-        packageId: query.packageId
+        packageId: query.packageId,
+        userId: actor.role === 'USER' ? actor.id : undefined
       })
     ]);
 

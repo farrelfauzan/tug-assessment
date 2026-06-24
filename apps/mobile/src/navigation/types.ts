@@ -18,6 +18,5 @@ export type OrdersStackParamList = {
 export type MainTabParamList = {
   Browse: undefined;
   Orders: undefined;
-  Reviews: undefined;
   Profile: undefined;
 };

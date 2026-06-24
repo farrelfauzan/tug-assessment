@@ -132,6 +132,10 @@ feature/
 - Keep components reusable and small
 - Separate UI from business logic
 - Handle loading, empty, and error states explicitly
+- Keep admin scope focused on internal operations:
+  - Create wellness packages
+  - View orders
+  - View reviews
 
 ### Never
 
@@ -154,6 +158,10 @@ feature/
 - Use Axios for API calls
 - Separate screens from business logic
 - Handle loading, empty, and error states
+- Keep mobile scope focused on user actions:
+  - Browse/list wellness packages
+  - Create orders
+  - Create reviews
 
 ### Never
 
@@ -167,7 +175,23 @@ feature/
 
 **Admin API:** `GET`, `POST`, `PATCH`, `DELETE`
 
-**Mobile API:** Read-only endpoints (`GET` only)
+**Mobile API:** `GET` for browsing and `POST` for user actions (order/review creation)
+
+### Role Scope (Current Product Rules)
+
+- `ADMIN`:
+  - Wellness packages: create/update/delete, and list/detail
+  - Orders: view all orders, update order status
+  - Reviews: view all reviews
+- `USER` (mobile app):
+  - Wellness packages: list/detail
+  - Orders: create order, view own orders
+  - Reviews: create review, view own reviews
+
+### Auth-bound Ownership
+
+- Never trust `userId` from client body for user actions.
+- For user-created resources (orders/reviews), derive actor identity from JWT (`request.user`).
 
 ### Response Format
 

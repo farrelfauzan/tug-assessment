@@ -53,11 +53,16 @@ type OrderResponse = {
   updatedAt: string;
 };
 
+type RequestActor = {
+  id: string;
+  role: 'ADMIN' | 'USER';
+};
+
 @Injectable()
 export class OrdersService {
   constructor(private readonly ordersRepository: OrdersRepository) {}
 
-  async create(input: CreateOrderInput): Promise<OrderResponse> {
+  async create(input: CreateOrderInput & { userId: string }): Promise<OrderResponse> {
     const created = await this.ordersRepository.create({
       userId: input.userId,
       wellnessPackageId: input.wellnessPackageId,
@@ -72,7 +77,7 @@ export class OrdersService {
     return this.toResponse(created);
   }
 
-  async list(query: ListOrdersQuery): Promise<{
+  async list(query: ListOrdersQuery, actor: RequestActor): Promise<{
     items: OrderResponse[];
     pagination: {
       total: number;
@@ -85,7 +90,8 @@ export class OrdersService {
     const { items, total } = await this.ordersRepository.list({
       skip: pagination.offset,
       take: pagination.limit,
-      status: query.status
+      status: query.status,
+      userId: actor.role === 'USER' ? actor.id : undefined
     });
 
     return {
@@ -99,11 +105,16 @@ export class OrdersService {
     };
   }
 
-  async getById(id: string): Promise<OrderResponse> {
+  async getById(id: string, actor: RequestActor): Promise<OrderResponse> {
     const order = await this.ordersRepository.findById(id);
     if (!order) {
       throw new NotFoundException('Order not found');
     }
+
+    if (actor.role === 'USER' && order.user.id !== actor.id) {
+      throw new NotFoundException('Order not found');
+    }
+
     return this.toResponse(order);
   }
 
