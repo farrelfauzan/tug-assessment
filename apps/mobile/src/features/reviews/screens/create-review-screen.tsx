@@ -2,7 +2,6 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useForm } from '@tanstack/react-form';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { z } from 'zod';
-import { useAuthSession } from '../../auth/hooks/use-auth-session';
 import type { PackagesStackParamList } from '../../../navigation/types';
 import { useToast } from '../../../providers/toast-provider';
 import { useCreateReview } from '../hooks/use-create-review';
@@ -16,7 +15,6 @@ const createReviewSchema = z.object({
 
 export function CreateReviewScreen({ navigation, route }: Props): JSX.Element {
   const { packageId, packageName } = route.params;
-  const { session } = useAuthSession();
   const { showToast } = useToast();
   const createReviewMutation = useCreateReview();
 
@@ -32,13 +30,7 @@ export function CreateReviewScreen({ navigation, route }: Props): JSX.Element {
         return;
       }
 
-      if (!session) {
-        showToast('Session missing. Please sign in again.', 'error');
-        return;
-      }
-
       await createReviewMutation.mutateAsync({
-        userId: session.user.id,
         wellnessPackageId: packageId,
         rating: parsed.data.rating,
         comment: parsed.data.comment

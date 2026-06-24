@@ -16,6 +16,11 @@ import {
   type ListReviewsQuery,
   type UpdateReviewInput
 } from '@tug/api-schemas';
+import { CurrentUser } from '../../shared/decorators/current-user.decorator';
+import {
+  requireCurrentUser,
+  type AuthenticatedUser
+} from '../../shared/decorators/require-current-user.decorator';
 import { Roles } from '../../shared/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../shared/guards/roles.guard';
@@ -28,29 +33,47 @@ import { ReviewsService } from './services/reviews.service';
 
 @Controller('reviews')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
 @ApiTags('reviews')
 @ApiBearerAuth()
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
-  async create(@Body() body: CreateReviewDto) {
+  @Roles('USER')
+  async create(
+    @Body() body: CreateReviewDto,
+    @CurrentUser() user?: AuthenticatedUser
+  ) {
+    const actor = requireCurrentUser(user);
+
     return {
       success: true,
-      data: await this.reviewsService.create(body as CreateReviewInput)
+      data: await this.reviewsService.create({
+        ...(body as CreateReviewInput),
+        userId: actor.sub
+      })
     };
   }
 
   @Get()
-  async list(@Query() query: ListReviewsQueryDto) {
+  @Roles('ADMIN', 'USER')
+  async list(
+    @Query() query: ListReviewsQueryDto,
+    @CurrentUser() user?: AuthenticatedUser
+  ) {
+    const actor = requireCurrentUser(user);
+
     return {
       success: true,
-      data: await this.reviewsService.list(query as ListReviewsQuery)
+      data: await this.reviewsService.list(query as ListReviewsQuery, {
+        id: actor.sub,
+        role: actor.role
+      })
     };
   }
 
   @Patch(':id')
+  @Roles('ADMIN')
   async update(@Param('id') id: string, @Body() body: UpdateReviewDto) {
     const parsed = reviewIdSchema.parse({ id });
     return {
@@ -60,6 +83,7 @@ export class ReviewsController {
   }
 
   @Delete(':id')
+  @Roles('ADMIN')
   async remove(@Param('id') id: string) {
     const parsed = reviewIdSchema.parse({ id });
     return {

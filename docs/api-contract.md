@@ -4,6 +4,28 @@
 
 This document defines the complete REST API for the Wellness Package Management System.
 
+## Current Scope (Authoritative)
+
+The implementation now uses a single role-based API surface (no separate `/mobile/*` namespace).
+
+- `ADMIN`
+  - Wellness packages: `GET /wellness-packages`, `GET /wellness-packages/:id`, `POST /wellness-packages`, `PATCH /wellness-packages/:id`, `DELETE /wellness-packages/:id`
+  - Orders: `GET /orders`, `GET /orders/:id`, `PATCH /orders/:id/status`
+  - Reviews: `GET /reviews`
+- `USER` (mobile app)
+  - Wellness packages: `GET /wellness-packages`, `GET /wellness-packages/:id`
+  - Orders: `POST /orders`, `GET /orders`, `GET /orders/:id` (own records only)
+  - Reviews: `POST /reviews`, `GET /reviews` (own records only)
+
+### Ownership and Identity Rules
+
+- For user actions, actor identity is derived from JWT (`request.user`).
+- `userId` must not be accepted from client body for `POST /orders` and `POST /reviews`.
+
+### Note
+
+Some legacy sections below still describe old `/mobile/*` examples. When there is a conflict, follow backend code and generated OpenAPI as source of truth.
+
 **Base URL**: `https://api.wellness.com/v1`
 
 **Response Format**:
@@ -904,7 +926,7 @@ const reviewListResponseSchema = z.object({
 
 ## Mobile API
 
-Mobile API endpoints are read-only and do not require authentication (except where noted).
+Mobile app consumes the same role-based endpoints as the admin API with `USER` scope restrictions.
 
 ### Wellness Packages Endpoints
 

@@ -15,6 +15,11 @@ import {
   type ListOrdersQuery,
   type UpdateOrderStatusInput
 } from '@tug/api-schemas';
+import { CurrentUser } from '../../shared/decorators/current-user.decorator';
+import {
+  requireCurrentUser,
+  type AuthenticatedUser
+} from '../../shared/decorators/require-current-user.decorator';
 import { Roles } from '../../shared/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../shared/guards/roles.guard';
@@ -27,38 +32,65 @@ import { OrdersService } from './services/orders.service';
 
 @Controller('orders')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
 @ApiTags('orders')
 @ApiBearerAuth()
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  async create(@Body() body: CreateOrderDto) {
+  @Roles('USER')
+  async create(
+    @Body() body: CreateOrderDto,
+    @CurrentUser() user?: AuthenticatedUser
+  ) {
+    const actor = requireCurrentUser(user);
+
     return {
       success: true,
-      data: await this.ordersService.create(body as CreateOrderInput)
+      data: await this.ordersService.create({
+        ...(body as CreateOrderInput),
+        userId: actor.sub
+      })
     };
   }
 
   @Get()
-  async list(@Query() query: ListOrdersQueryDto) {
+  @Roles('ADMIN', 'USER')
+  async list(
+    @Query() query: ListOrdersQueryDto,
+    @CurrentUser() user?: AuthenticatedUser
+  ) {
+    const actor = requireCurrentUser(user);
+
     return {
       success: true,
-      data: await this.ordersService.list(query as ListOrdersQuery)
+      data: await this.ordersService.list(query as ListOrdersQuery, {
+        id: actor.sub,
+        role: actor.role
+      })
     };
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string) {
+  @Roles('ADMIN', 'USER')
+  async getById(
+    @Param('id') id: string,
+    @CurrentUser() user?: AuthenticatedUser
+  ) {
+    const actor = requireCurrentUser(user);
+
     const parsed = orderIdSchema.parse({ id });
     return {
       success: true,
-      data: await this.ordersService.getById(parsed.id)
+      data: await this.ordersService.getById(parsed.id, {
+        id: actor.sub,
+        role: actor.role
+      })
     };
   }
 
   @Patch(':id/status')
+  @Roles('ADMIN')
   async updateStatus(@Param('id') id: string, @Body() body: UpdateOrderStatusDto) {
     const parsed = orderIdSchema.parse({ id });
     return {

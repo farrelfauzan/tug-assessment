@@ -2,10 +2,13 @@ import {
   Body,
   Controller,
   Post,
-  UnauthorizedException,
   UseGuards
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  type AuthenticatedUser,
+  requireCurrentUser
+} from '../../shared/decorators/require-current-user.decorator';
 import {
   logoutResponseSchema,
   type LoginResponse,
@@ -42,17 +45,11 @@ export class AuthController {
   @ApiBearerAuth()
   async logout(
     @CurrentUser()
-    user: {
-      sub: string;
-      email: string;
-      role: 'ADMIN' | 'USER';
-    } | undefined
+    user: AuthenticatedUser | undefined
   ) {
-    if (!user) {
-      throw new UnauthorizedException('Unauthorized');
-    }
+    const actor = requireCurrentUser(user);
 
-    const response = await this.authService.logout(user.sub);
+    const response = await this.authService.logout(actor.sub);
     return {
       success: true,
       data: logoutResponseSchema.parse(response)

@@ -10,7 +10,6 @@ import {
   View
 } from 'react-native';
 import { z } from 'zod';
-import { useAuthSession } from '../../auth/hooks/use-auth-session';
 import { useToast } from '../../../providers/toast-provider';
 import { useWellnessPackages } from '../../wellness-packages/hooks/use-wellness-packages';
 import { useCreateOrder } from '../hooks/use-orders';
@@ -34,7 +33,6 @@ function formatPrice(price: number): string {
 }
 
 export function OrderCreateScreen({ navigation }: Props): JSX.Element {
-  const { session } = useAuthSession();
   const { showToast } = useToast();
   const createOrderMutation = useCreateOrder();
   const packagesQuery = useWellnessPackages('');
@@ -57,13 +55,7 @@ export function OrderCreateScreen({ navigation }: Props): JSX.Element {
         return;
       }
 
-      if (!session) {
-        showToast('Session missing. Please sign in again.', 'error');
-        return;
-      }
-
       await createOrderMutation.mutateAsync({
-        userId: session.user.id,
         wellnessPackageId: parsed.data.packageId,
         quantity,
         paymentProvider: 'STRIPE'

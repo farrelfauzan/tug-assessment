@@ -129,9 +129,9 @@ This plan breaks the assessment into 18 atomic implementation tasks, prioritized
 
 **Acceptance Criteria**:
 - [ ] Order entity with relationships
-- [ ] Create order endpoint
-- [ ] List orders endpoint (admin)
-- [ ] Get order by ID endpoint
+- [ ] Create order endpoint (`USER`)
+- [ ] List orders endpoint (`ADMIN` all, `USER` own)
+- [ ] Get order by ID endpoint (`ADMIN` any, `USER` own)
 - [ ] Update order status endpoint
 - [ ] Order items entity
 - [ ] Payment entity
@@ -148,8 +148,8 @@ This plan breaks the assessment into 18 atomic implementation tasks, prioritized
 
 **Acceptance Criteria**:
 - [ ] Review entity
-- [ ] Create review endpoint
-- [ ] List reviews endpoint
+- [ ] Create review endpoint (`USER`)
+- [ ] List reviews endpoint (`ADMIN` all, `USER` own)
 - [ ] Update review endpoint
 - [ ] Delete review endpoint
 - [ ] Calculate average ratings
@@ -241,10 +241,9 @@ This plan breaks the assessment into 18 atomic implementation tasks, prioritized
 **Acceptance Criteria**:
 - [ ] Dashboard layout with sidebar
 - [ ] Wellness packages list page
-- [ ] Wellness package create/edit page
-- [ ] Orders list page
-- [ ] Order details page
-- [ ] Reviews list page
+- [ ] Wellness package create page
+- [ ] Orders list page (view)
+- [ ] Reviews list page (view)
 - [ ] Loading, empty, and error states
 - [ ] Toast notifications
 
@@ -302,9 +301,17 @@ This plan breaks the assessment into 18 atomic implementation tasks, prioritized
 - [ ] Order list screen
 - [ ] Order detail screen
 - [ ] Review creation screen
-- [ ] Review list screen
 - [ ] User profile screen
 - [ ] Toast notifications
+
+---
+
+## Scope Clarification (Post-implementation)
+
+- Mobile app does not implement admin CRUD actions.
+- Mobile app supports: package browsing, order creation, review creation.
+- Admin portal supports: package creation, order viewing, review viewing.
+- For user-created resources, backend derives actor from JWT and does not trust `userId` from request body.
 
 ---
 

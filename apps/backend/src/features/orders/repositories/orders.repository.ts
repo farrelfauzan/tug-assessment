@@ -74,10 +74,12 @@ export class OrdersRepository {
     skip: number;
     take: number;
     status?: OrderStatus;
+    userId?: string;
   }): Promise<{ items: OrderWithRelations[]; total: number }> {
     const where: Prisma.OrderWhereInput = {
       deletedAt: null,
-      ...(args.status ? { status: args.status } : {})
+      ...(args.status ? { status: args.status } : {}),
+      ...(args.userId ? { userId: args.userId } : {})
     };
 
     const [items, total] = await this.prisma.$transaction([

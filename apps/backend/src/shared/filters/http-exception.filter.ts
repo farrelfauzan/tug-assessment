@@ -8,12 +8,17 @@ import {
 import type { Request, Response } from 'express';
 import { ZodValidationException } from 'nestjs-zod';
 
+type RequestWithMeta = Request & {
+  requestId?: string;
+};
+
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): void {
     const context = host.switchToHttp();
     const response = context.getResponse<Response>();
-    const request = context.getRequest<Request>();
+    const request = context.getRequest<RequestWithMeta>();
+    const requestId = request.requestId;
 
     if (exception instanceof ZodValidationException) {
       response.status(HttpStatus.BAD_REQUEST).json({
@@ -25,7 +30,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
           code: issue.code
         })),
         path: request.url,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        requestId
       });
       return;
     }
@@ -45,7 +51,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message,
         errors: [],
         path: request.url,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        requestId
       });
       return;
     }
@@ -55,7 +62,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message: 'Internal server error',
       errors: [],
       path: request.url,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      requestId
     });
   }
 }

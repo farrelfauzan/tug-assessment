@@ -33,11 +33,13 @@ export class ReviewsRepository {
     take: number;
     rating?: number;
     packageId?: string;
+    userId?: string;
   }): Promise<{ items: ReviewWithRelations[]; total: number }> {
     const where: Prisma.ReviewWhereInput = {
       deletedAt: null,
       ...(args.rating !== undefined ? { rating: args.rating } : {}),
-      ...(args.packageId ? { wellnessPackageId: args.packageId } : {})
+      ...(args.packageId ? { wellnessPackageId: args.packageId } : {}),
+      ...(args.userId ? { userId: args.userId } : {})
     };
 
     const [items, total] = await this.prisma.$transaction([
@@ -59,12 +61,17 @@ export class ReviewsRepository {
     return { items, total };
   }
 
-  async averageRating(args: { rating?: number; packageId?: string }): Promise<number | null> {
+  async averageRating(args: {
+    rating?: number;
+    packageId?: string;
+    userId?: string;
+  }): Promise<number | null> {
     const aggregate = await this.prisma.review.aggregate({
       where: {
         deletedAt: null,
         ...(args.rating !== undefined ? { rating: args.rating } : {}),
-        ...(args.packageId ? { wellnessPackageId: args.packageId } : {})
+        ...(args.packageId ? { wellnessPackageId: args.packageId } : {}),
+        ...(args.userId ? { userId: args.userId } : {})
       },
       _avg: {
         rating: true

@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { LoginInput, LoginResponse, RefreshResponse } from '@tug/api-schemas';
 import bcrypt from 'bcryptjs';
+import { getJwtSecret } from '../../../shared/auth/jwt.config';
 import { AuthRepository } from '../repositories/auth.repository';
 
 type AccessTokenPayload = {
@@ -81,7 +82,7 @@ export class AuthService {
   }
 
   private async generateTokens(payload: AccessTokenPayload): Promise<RefreshResponse> {
-    const secret = process.env.JWT_SECRET ?? 'local-dev-secret';
+    const secret = getJwtSecret();
     const accessExpiresIn = process.env.JWT_EXPIRES_IN ?? '15m';
     const refreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN ?? '7d';
 
@@ -103,7 +104,7 @@ export class AuthService {
   }
 
   private async verifyRefreshToken(token: string): Promise<AccessTokenPayload> {
-    const secret = process.env.JWT_SECRET ?? 'local-dev-secret';
+    const secret = getJwtSecret();
     try {
       return await this.jwtService.verifyAsync<AccessTokenPayload>(token, {
         secret

@@ -17,7 +17,6 @@ export const paymentProviderSchema = z.enum([
 ]);
 
 export const createOrderSchema = z.object({
-  userId: z.string().uuid(),
   wellnessPackageId: z.string().uuid(),
   quantity: z.number().int().min(1).default(1),
   paymentProvider: paymentProviderSchema.default('STRIPE')
