@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -16,6 +16,22 @@ import type { PackagesStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<PackagesStackParamList, 'PackageList'>;
 
+function useDebouncedValue<TValue>(value: TValue, delayMs: number): TValue {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delayMs);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [delayMs, value]);
+
+  return debouncedValue;
+}
+
 function formatPrice(price: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -25,7 +41,8 @@ function formatPrice(price: number): string {
 
 export function PackageListScreen({ navigation }: Props): JSX.Element {
   const [searchInput, setSearchInput] = useState('');
-  const search = useMemo(() => searchInput.trim(), [searchInput]);
+  const debouncedSearchInput = useDebouncedValue(searchInput, 350);
+  const search = useMemo(() => debouncedSearchInput.trim(), [debouncedSearchInput]);
   const { data, isLoading, isError, refetch, isRefetching } = useWellnessPackages(search);
 
   const items = data?.items ?? [];
@@ -46,7 +63,7 @@ export function PackageListScreen({ navigation }: Props): JSX.Element {
     );
   };
 
-  if (isLoading) {
+  if (isLoading && !data) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" />

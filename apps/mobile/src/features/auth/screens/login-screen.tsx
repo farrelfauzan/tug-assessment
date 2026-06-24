@@ -27,8 +27,8 @@ export function LoginScreen({}: Props): JSX.Element {
 
   const form = useForm({
     defaultValues: {
-      email: 'admin@example.com',
-      password: 'Admin123!'
+      email: 'user@example.com',
+      password: 'User123!'
     },
     onSubmit: async ({ value }) => {
       const parsed = loginSchema.safeParse(value);
@@ -45,7 +45,7 @@ export function LoginScreen({}: Props): JSX.Element {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
-      <Text style={styles.subtitle}>Use seeded account to continue</Text>
+      <Text style={styles.subtitle}>Use seeded user account to continue</Text>
 
       <form.Field
         name="email"

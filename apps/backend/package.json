@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "prisma generate",
+    "prepare:workspace-libs": "pnpm --filter @tug/api-schemas build && pnpm --filter @tug/utils build",
+    "predev": "pnpm run prepare:workspace-libs && prisma generate",
+    "prebuild": "pnpm run prepare:workspace-libs && prisma generate",
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main.js",

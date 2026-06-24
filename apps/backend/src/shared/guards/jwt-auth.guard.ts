@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { Request } from 'express';
+import { getAccessTokenFromCookie } from '../auth/auth-cookie';
 import { getJwtSecret } from '../auth/jwt.config';
 
 type AuthenticatedRequest = Request & {
@@ -22,7 +23,7 @@ export class JwtAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
-    const token = this.extractTokenFromHeader(request);
+    const token = this.extractToken(request);
 
     if (!token) {
       throw new UnauthorizedException('Missing bearer token');
@@ -41,6 +42,15 @@ export class JwtAuthGuard implements CanActivate {
     } catch {
       throw new UnauthorizedException('Invalid token');
     }
+  }
+
+  private extractToken(request: Request): string | undefined {
+    const headerToken = this.extractTokenFromHeader(request);
+    if (headerToken) {
+      return headerToken;
+    }
+
+    return getAccessTokenFromCookie(request);
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

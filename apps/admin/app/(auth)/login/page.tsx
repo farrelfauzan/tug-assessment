@@ -12,7 +12,6 @@ import {
   CardTitle
 } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
-import { saveTokens } from '../../../lib/auth';
 import { showErrorToast, showSuccessToast } from '../../../lib/toast';
 import { loginSchema } from '../../../features/auth/schemas/login.schema';
 import { login } from '../../../features/auth/services/auth.service';
@@ -21,8 +20,7 @@ export default function LoginPage(): JSX.Element {
   const router = useRouter();
   const loginMutation = useMutation({
     mutationFn: login,
-    onSuccess: (data) => {
-      saveTokens(data.accessToken, data.refreshToken);
+    onSuccess: () => {
       showSuccessToast('Login successful');
       router.replace('/dashboard');
     },

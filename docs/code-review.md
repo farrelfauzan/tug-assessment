@@ -197,13 +197,13 @@ Scope reviewed: current repository state after JWT hardening, current-user refac
 * Major improvement: insecure default JWT fallback removed from runtime paths.
 * JWT secret now enforced with fail-fast behavior outside tests.
 * Ownership and role controls remain correctly implemented.
-* Residual risk: admin auth tokens still stored in localStorage; acceptable for internal tools but not ideal for stronger threat models.
+* Admin web auth now uses HTTP-only cookies and `withCredentials`; localStorage token persistence has been removed.
 * CORS remains permissive and should be environment-constrained.
 
 ## Recommendations
 
 * Add env-based CORS allowlist policy.
-* Evaluate secure-cookie auth storage for admin if security posture needs tightening.
+* Add environment-specific cookie policy hardening (domain, max-age, and secure flags per environment).
 
 ---
 
@@ -403,7 +403,7 @@ Scope reviewed: current repository state after JWT hardening, current-user refac
 ## High Priority Issues
 
 * CI pipeline still skips tests.
-* Admin token persistence in localStorage remains a security trade-off.
+* CORS policy is still broad and should be tightened per environment.
 
 ## Medium Priority Issues
 
@@ -432,7 +432,7 @@ Scope reviewed: current repository state after JWT hardening, current-user refac
 
 * Documentation still has partial mismatch risk.
 
-* Frontend auth storage hardening remains pending for stricter security requirements.
+* CORS and CI test-gate hardening remain pending.
 
 ---
 
@@ -475,7 +475,7 @@ Good
 2. Top 3 weaknesses
    - CI still lacks mandatory test execution.
    - Partial documentation drift persists.
-   - Frontend token storage model is still a known trade-off.
+   - CORS policy is still permissive and should be environment-bound.
 
 3. Highest-risk area
    - DevOps release confidence (test gate missing in CI).
