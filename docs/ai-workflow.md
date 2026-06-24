@@ -81,6 +81,8 @@ Mobile-specific corrections:
   - Credential ownership, auth method selection (SSH vs HTTPS), and repository permission resolution were handled manually for security reasons.
 - **Branching policy decision enforcement**
   - Team process decisions (one branch per task, naming conventions) were explicitly human-directed and then documented.
+- **Technical design decisions**
+  - Architectural choices (e.g., module boundaries, provider composition, shared service patterns) were made by humans to ensure maintainability and clarity.
 
 ## Summary
 
