@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { LogoutButton } from '../../components/admin/logout-button';
 import { Sidebar } from '../../components/admin/sidebar';
+import { SidebarProvider } from '../../components/ui/sidebar';
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -8,14 +8,11 @@ type DashboardLayoutProps = {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps): JSX.Element {
   return (
-    <div className="dashboard shell">
-      <Sidebar />
-      <section className="content">
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-          <LogoutButton />
-        </div>
-        {children}
-      </section>
-    </div>
+    <SidebarProvider>
+      <div className="min-h-screen bg-background text-foreground md:flex">
+        <Sidebar />
+        <section className="flex-1 p-4 md:p-6">{children}</section>
+      </div>
+    </SidebarProvider>
   );
 }

@@ -1,9 +1,15 @@
 'use client';
 
-export function showToast(message: string): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
+import { toast } from 'sonner';
 
-  window.alert(message);
+export function showToast(message: string): void {
+  toast(message);
+}
+
+export function showErrorToast(message: string): void {
+  toast.error(message);
+}
+
+export function showSuccessToast(message: string): void {
+  toast.success(message);
 }
