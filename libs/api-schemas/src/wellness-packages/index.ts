@@ -1,7 +1,9 @@
 export {
   createWellnessPackageSchema,
   updateWellnessPackageSchema,
+  wellnessPackageIdSchema,
   wellnessPackageListQuerySchema,
+  wellnessPackageListResponseSchema,
   wellnessPackageSchema,
   wellnessPackageStatusSchema
 } from './schema';
@@ -9,6 +11,8 @@ export {
 export type {
   CreateWellnessPackageInput,
   UpdateWellnessPackageInput,
+  WellnessPackageIdInput,
+  WellnessPackageListResponse,
   WellnessPackage,
   WellnessPackageListQuery
 } from './schema';

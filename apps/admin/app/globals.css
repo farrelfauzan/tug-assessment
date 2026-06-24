@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 36 40% 96%;
+    --foreground: 30 14% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 30 14% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 14% 12%;
+
+    --primary: 157 50% 28%;
+    --primary-foreground: 60 9% 98%;
+
+    --secondary: 35 30% 88%;
+    --secondary-foreground: 30 14% 12%;
+
+    --muted: 36 25% 90%;
+    --muted-foreground: 30 8% 40%;
+
+    --accent: 37 30% 85%;
+    --accent-foreground: 30 14% 12%;
+
+    --destructive: 0 74% 42%;
+    --destructive-foreground: 60 9% 98%;
+
+    --border: 34 25% 79%;
+    --input: 34 25% 79%;
+    --ring: 157 50% 28%;
+
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background:
+      radial-gradient(circle at 15% 10%, #efe2d2 0, transparent 35%),
+      radial-gradient(circle at 85% 85%, #eadac6 0, transparent 40%);
+    font-family: "Avenir Next", "Gill Sans", "Trebuchet MS", sans-serif;
+    min-height: 100vh;
+  }
+}

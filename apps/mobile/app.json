@@ -4,6 +4,9 @@
     "slug": "wellness-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "platforms": ["ios", "android", "web"]
+    "platforms": ["ios", "android", "web"],
+    "extra": {
+      "apiUrl": "http://localhost:3001"
+    }
   }
 }

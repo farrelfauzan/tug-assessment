@@ -3,10 +3,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
-    "paths": {
-      "@tug/api-schemas": ["../../libs/api-schemas/src/index.ts"],
-      "@tug/utils": ["../../libs/utils/src/index.ts"]
-    },
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,

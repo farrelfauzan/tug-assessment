@@ -123,6 +123,7 @@ feature/
 ### Always
 
 - Use Next.js App Router (`app/` directory)
+- Use Tailwind CSS (configured) as styling foundation
 - Use TanStack Query for server state
 - Use TanStack Form for forms (@tanstack/react-form)
 - Use Zod for form validation
@@ -137,6 +138,7 @@ feature/
 - ❌ React Hook Form (use TanStack Form)
 - ❌ `fetch` directly (use Axios client)
 - ❌ Duplicate API logic
+- ❌ Unconfigured CSS stack for shadcn/ui (Tailwind must be set up)
 
 ---
 

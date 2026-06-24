@@ -1,3 +1,5 @@
-export default function HomePage(): JSX.Element {
-  return <main>Admin portal is running.</main>;
+import { redirect } from 'next/navigation';
+
+export default function HomePage(): never {
+  redirect('/login');
 }
