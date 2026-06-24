@@ -1,0 +1,274 @@
+openapi: 3.0.0
+paths:
+  /health:
+    get:
+      operationId: AppController_getHealth
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginDto"
+      responses:
+        "201":
+          description: ""
+      tags: &a1
+        - auth
+  /auth/refresh:
+    post:
+      operationId: AuthController_refresh
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenDto"
+      responses:
+        "201":
+          description: ""
+      tags: *a1
+  /auth/logout:
+    post:
+      operationId: AuthController_logout
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags: *a1
+      security:
+        - bearer: []
+  /wellness-packages:
+    get:
+      operationId: WellnessPackagesController_list
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: &a2
+        - wellness-packages
+      security: &a3
+        - bearer: []
+    post:
+      operationId: WellnessPackagesController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWellnessPackageDto"
+      responses:
+        "201":
+          description: ""
+      tags: *a2
+      security: *a3
+  /wellness-packages/{id}:
+    get:
+      operationId: WellnessPackagesController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a2
+      security: *a3
+    patch:
+      operationId: WellnessPackagesController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWellnessPackageDto"
+      responses:
+        "200":
+          description: ""
+      tags: *a2
+      security: *a3
+    delete:
+      operationId: WellnessPackagesController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a2
+      security: *a3
+  /orders:
+    post:
+      operationId: OrdersController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderDto"
+      responses:
+        "201":
+          description: ""
+      tags: &a4
+        - orders
+      security: &a5
+        - bearer: []
+    get:
+      operationId: OrdersController_list
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+      security: *a5
+  /orders/{id}:
+    get:
+      operationId: OrdersController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+      security: *a5
+  /orders/{id}/status:
+    patch:
+      operationId: OrdersController_updateStatus
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOrderStatusDto"
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+      security: *a5
+  /reviews:
+    post:
+      operationId: ReviewsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReviewDto"
+      responses:
+        "201":
+          description: ""
+      tags: &a6
+        - reviews
+      security: &a7
+        - bearer: []
+    get:
+      operationId: ReviewsController_list
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a6
+      security: *a7
+  /reviews/{id}:
+    patch:
+      operationId: ReviewsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateReviewDto"
+      responses:
+        "200":
+          description: ""
+      tags: *a6
+      security: *a7
+    delete:
+      operationId: ReviewsController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a6
+      security: *a7
+info:
+  title: Wellness Package Management API
+  description: Admin and mobile API endpoints
+  version: 1.0.0
+  contact: {}
+tags: []
+servers: []
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    LoginDto:
+      type: object
+      properties: {}
+    RefreshTokenDto:
+      type: object
+      properties: {}
+    CreateWellnessPackageDto:
+      type: object
+      properties: {}
+    UpdateWellnessPackageDto:
+      type: object
+      properties: {}
+    CreateOrderDto:
+      type: object
+      properties: {}
+    UpdateOrderStatusDto:
+      type: object
+      properties: {}
+    CreateReviewDto:
+      type: object
+      properties: {}
+    UpdateReviewDto:
+      type: object
+      properties: {}

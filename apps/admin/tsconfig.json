@@ -15,10 +15,6 @@
         "name": "next"
       }
     ],
-    "paths": {
-      "@tug/api-schemas": ["../../libs/api-schemas/src/index.ts"],
-      "@tug/utils": ["../../libs/utils/src/index.ts"]
-    },
     "isolatedModules": true
   },
   "include": [
