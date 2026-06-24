@@ -439,7 +439,10 @@ This plan breaks the assessment into 18 atomic implementation tasks, prioritized
 ## Notes
 
 - Tasks can be run in parallel where dependencies allow
-- Use feature branches for each task
+- Use feature branches for each task (required)
+- Branch naming convention: `feature/task-<number>-<short-name>`
+- Create branch from `main`, implement one task only, then open PR and merge
+- Do not combine multiple tasks in one branch unless explicitly approved
 - Commit frequently with descriptive messages
 - Update documentation as you go
 - Test at the end of each task

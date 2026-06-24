@@ -312,6 +312,10 @@ feature/
 
 - Commit messages: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`
 - Branch naming: `feature/`, `fix/`, `refactor/`
+- Use a dedicated feature branch for each implementation task (required)
+- Recommended task branch format: `feature/task-<number>-<short-name>`
+- Branch flow: create from `main` -> complete one task -> open PR -> merge
+- Do not combine multiple tasks in one branch unless explicitly approved
 - PR descriptions: Include context, changes, and testing steps
 
 ---
