@@ -5,6 +5,10 @@ export type PackagesStackParamList = {
   CreateReview: { packageId: string; packageName: string };
 };
 
+export type AuthStackParamList = {
+  Login: undefined;
+};
+
 export type OrdersStackParamList = {
   OrdersList: undefined;
   OrderDetail: { orderId: string };

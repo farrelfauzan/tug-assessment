@@ -8,6 +8,8 @@ This section summarizes how AI was used during implementation, what worked well,
   - Scaffolding monorepo structure (`apps/`, `libs/`, workspace configs)
   - Generating backend feature modules (auth, wellness packages, orders, reviews)
   - Creating admin portal foundations (App Router structure, providers, service/hook scaffolding)
+  - Implementing mobile app phases (navigation stacks/tabs, package browsing, user flows)
+  - Adding mobile authentication flow (login, auth gating, token injection, session persistence)
   - Drafting and updating project docs (`implementation-plan`, UI fix docs)
 - **Terminal automation through AI orchestration**
   - Dependency installation and lockfile updates (`pnpm install`)
@@ -18,6 +20,9 @@ This section summarizes how AI was used during implementation, what worked well,
   - Diagnosing backend startup/runtime path mismatches and module resolution issues
   - Fixing guard/module DI wiring and cross-module shared provider setup
   - Addressing frontend network/CORS behavior and environment-loading issues
+  - Resolving Expo web white-screen failures (metro + entrypoint + dependency resolution)
+  - Fixing mobile auth regressions (missing bearer token, session reset on refresh)
+  - Fixing mobile form UX issues (quantity input handling and package selection UX)
 
 ## Prompt Sequences That Worked Well
 
@@ -63,6 +68,11 @@ This section summarizes how AI was used during implementation, what worked well,
 Additional notable correction:
 - A global roles guard application caused unintended forbidden responses; guard usage was moved to route-level composition with explicit `@UseGuards(JwtAuthGuard, RolesGuard)` + `@Roles(...)`.
 
+Mobile-specific corrections:
+- Early mobile create-order flow required manual UUID input; this was replaced with selectable package cards sourced from API data.
+- Authenticated requests initially missed `Authorization: Bearer <token>` headers; centralized Axios interceptor/token setter was added.
+- Login session was initially in-memory only; persistence and hydration were added via AsyncStorage so refresh does not force logout.
+
 ## Where We Chose NOT To Use AI
 
 - **Final UX judgment and acceptance sign-off**
@@ -75,4 +85,3 @@ Additional notable correction:
 ## Summary
 
 AI was most effective for structured scaffolding, repetitive boilerplate, and fast iteration under explicit constraints. Human oversight remained essential for UX intent, security-sensitive operations, and process governance.
-

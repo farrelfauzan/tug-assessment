@@ -1,9 +1,16 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useForm } from '@tanstack/react-form';
-import { useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
+} from 'react-native';
 import { z } from 'zod';
-import { CURRENT_USER_ID } from '../../../constants/current-user';
+import { useAuthSession } from '../../auth/hooks/use-auth-session';
 import { useToast } from '../../../providers/toast-provider';
 import { useWellnessPackages } from '../../wellness-packages/hooks/use-wellness-packages';
 import { useCreateOrder } from '../hooks/use-orders';
@@ -12,23 +19,30 @@ import type { OrdersStackParamList } from '../../../navigation/types';
 type Props = NativeStackScreenProps<OrdersStackParamList, 'OrderCreate'>;
 
 const createOrderFormSchema = z.object({
-  packageId: z.string().uuid('Select a valid package ID'),
-  quantity: z.coerce.number().int().min(1, 'Minimum quantity is 1')
+  packageId: z.string().uuid('Please select a package'),
+  quantityText: z
+    .string()
+    .min(1, 'Quantity is required')
+    .regex(/^\d+$/, 'Quantity must be a number')
 });
 
+function formatPrice(price: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  }).format(price);
+}
+
 export function OrderCreateScreen({ navigation }: Props): JSX.Element {
+  const { session } = useAuthSession();
   const { showToast } = useToast();
   const createOrderMutation = useCreateOrder();
   const packagesQuery = useWellnessPackages('');
 
-  const activePackageIds = useMemo(() => {
-    return packagesQuery.data?.items.map((item) => item.id).join(', ') ?? 'Loading package IDs...';
-  }, [packagesQuery.data]);
-
   const form = useForm({
     defaultValues: {
       packageId: '',
-      quantity: 1
+      quantityText: '1'
     },
     onSubmit: async ({ value }) => {
       const parsed = createOrderFormSchema.safeParse(value);
@@ -37,10 +51,21 @@ export function OrderCreateScreen({ navigation }: Props): JSX.Element {
         return;
       }
 
+      const quantity = Number(parsed.data.quantityText);
+      if (!Number.isInteger(quantity) || quantity < 1) {
+        showToast('Minimum quantity is 1', 'error');
+        return;
+      }
+
+      if (!session) {
+        showToast('Session missing. Please sign in again.', 'error');
+        return;
+      }
+
       await createOrderMutation.mutateAsync({
-        userId: CURRENT_USER_ID,
+        userId: session.user.id,
         wellnessPackageId: parsed.data.packageId,
-        quantity: parsed.data.quantity,
+        quantity,
         paymentProvider: 'STRIPE'
       });
 
@@ -49,35 +74,72 @@ export function OrderCreateScreen({ navigation }: Props): JSX.Element {
     }
   });
 
+  if (packagesQuery.isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" />
+        <Text style={styles.statusText}>Loading available packages...</Text>
+      </View>
+    );
+  }
+
+  if (packagesQuery.isError) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.statusText}>Failed to load packages.</Text>
+        <Pressable style={styles.retryButton} onPress={() => packagesQuery.refetch()}>
+          <Text style={styles.retryButtonText}>Try Again</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  const packages = packagesQuery.data?.items ?? [];
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.note}>Available package IDs: {activePackageIds}</Text>
+      <Text style={styles.heading}>Choose a package</Text>
 
       <form.Field
         name="packageId"
         children={(field) => (
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Package ID</Text>
-            <TextInput
-              value={field.state.value}
-              onChangeText={field.handleChange}
-              onBlur={field.handleBlur}
-              placeholder="Enter package UUID"
-              style={styles.input}
-            />
+            {packages.map((item) => {
+              const selected = field.state.value === item.id;
+
+              return (
+                <Pressable
+                  key={item.id}
+                  onPress={() => field.handleChange(item.id)}
+                  style={[styles.packageCard, selected ? styles.packageCardSelected : null]}
+                >
+                  <Text style={styles.packageName}>{item.name}</Text>
+                  <Text style={styles.packageMeta}>{formatPrice(item.price)}</Text>
+                  <Text style={styles.packageMeta}>{item.durationWeeks} weeks</Text>
+                </Pressable>
+              );
+            })}
           </View>
         )}
       />
 
       <form.Field
-        name="quantity"
+        name="quantityText"
         children={(field) => (
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>Quantity</Text>
             <TextInput
-              value={String(field.state.value)}
-              onChangeText={(nextValue) => field.handleChange(Number(nextValue) || 1)}
-              onBlur={field.handleBlur}
+              value={field.state.value}
+              onChangeText={(nextValue) => {
+                const sanitized = nextValue.replace(/[^0-9]/g, '');
+                field.handleChange(sanitized);
+              }}
+              onBlur={() => {
+                field.handleBlur();
+                if (field.state.value.length === 0) {
+                  field.handleChange('1');
+                }
+              }}
               keyboardType="number-pad"
               style={styles.input}
             />
@@ -105,12 +167,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#f4f7fb',
     minHeight: '100%'
   },
-  note: {
-    color: '#49617e',
-    fontSize: 12
+  heading: {
+    color: '#1b2a41',
+    fontWeight: '700',
+    fontSize: 16
   },
   fieldGroup: {
     gap: 6
+  },
+  packageCard: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#c9d7ea',
+    borderRadius: 10,
+    padding: 12,
+    gap: 4
+  },
+  packageCardSelected: {
+    borderColor: '#1e4c84',
+    backgroundColor: '#eaf1fb'
+  },
+  packageName: {
+    color: '#1b2a41',
+    fontWeight: '700'
+  },
+  packageMeta: {
+    color: '#49617e'
   },
   label: {
     color: '#1b2a41',
@@ -134,5 +216,25 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: '#ffffff',
     fontWeight: '700'
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    gap: 10
+  },
+  statusText: {
+    color: '#2f435d'
+  },
+  retryButton: {
+    backgroundColor: '#1e4c84',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10
+  },
+  retryButtonText: {
+    color: '#ffffff',
+    fontWeight: '600'
   }
 });
