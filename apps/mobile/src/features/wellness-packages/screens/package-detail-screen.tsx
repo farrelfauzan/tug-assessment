@@ -54,6 +54,18 @@ export function PackageDetailScreen({ navigation, route }: Props): JSX.Element {
       >
         <Text style={styles.reviewButtonText}>See Reviews</Text>
       </Pressable>
+
+      <Pressable
+        style={styles.secondaryButton}
+        onPress={() =>
+          navigation.navigate('CreateReview', {
+            packageId: data.id,
+            packageName: data.name
+          })
+        }
+      >
+        <Text style={styles.secondaryButtonText}>Write Review</Text>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -111,6 +123,20 @@ const styles = StyleSheet.create({
   },
   reviewButtonText: {
     color: '#ffffff',
+    fontWeight: '600'
+  },
+  secondaryButton: {
+    marginTop: 8,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#1e4c84',
+    alignSelf: 'flex-start'
+  },
+  secondaryButtonText: {
+    color: '#1e4c84',
     fontWeight: '600'
   }
 });
