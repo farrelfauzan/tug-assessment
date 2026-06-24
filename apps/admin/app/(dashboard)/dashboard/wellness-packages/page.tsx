@@ -1,88 +1,120 @@
-'use client';
+"use client";
 
-import { useForm } from '@tanstack/react-form';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { z } from 'zod';
-import { Button } from '../../../../components/ui/button';
-import { Input } from '../../../../components/ui/input';
+import { useForm } from "@tanstack/react-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { z } from "zod";
+import { Button } from "../../../../components/ui/button";
+import { Input } from "../../../../components/ui/input";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
-} from '../../../../components/ui/table';
+  TableRow,
+} from "../../../../components/ui/table";
 import {
   createWellnessPackage,
-  listWellnessPackages
-} from '../../../../features/wellness-packages/services/wellness-packages.service';
-import { showErrorToast, showSuccessToast } from '../../../../lib/toast';
+  listWellnessPackages,
+} from "../../../../features/wellness-packages/services/wellness-packages.service";
+import { showErrorToast, showSuccessToast } from "../../../../lib/toast";
 
 const createPackageSchema = z.object({
-  name: z.string().trim().min(3, 'Name must be at least 3 characters').max(100),
-  description: z.string().trim().min(10, 'Description must be at least 10 characters').max(1000),
-  price: z.coerce.number().positive('Price must be greater than 0'),
-  durationWeeks: z.coerce.number().int('Duration must be an integer').min(1).max(52),
-  status: z.enum(['DRAFT', 'ACTIVE'])
+  name: z.string().trim().min(3, "Name must be at least 3 characters").max(100),
+  description: z
+    .string()
+    .trim()
+    .min(10, "Description must be at least 10 characters")
+    .max(1000),
+  price: z.coerce.number().positive("Price must be greater than 0"),
+  durationWeeks: z.coerce
+    .number()
+    .int("Duration must be an integer")
+    .min(1)
+    .max(52),
+  status: z.enum(["DRAFT", "ACTIVE"]),
 });
 
 export default function WellnessPackagesPage(): JSX.Element {
   const queryClient = useQueryClient();
   const query = useQuery({
-    queryKey: ['wellness-packages'],
-    queryFn: listWellnessPackages
+    queryKey: ["wellness-packages"],
+    queryFn: listWellnessPackages,
   });
 
   const createMutation = useMutation({
     mutationFn: createWellnessPackage,
     onSuccess: () => {
-      showSuccessToast('Package created successfully');
-      void queryClient.invalidateQueries({ queryKey: ['wellness-packages'] });
+      showSuccessToast("Package created successfully");
+      void queryClient.invalidateQueries({ queryKey: ["wellness-packages"] });
     },
     onError: (error: unknown) => {
       if (error instanceof AxiosError) {
-        showErrorToast(error.response?.data?.message ?? 'Failed to create package');
+        showErrorToast(
+          error.response?.data?.message ?? "Failed to create package",
+        );
         return;
       }
 
-      showErrorToast('Failed to create package');
-    }
+      showErrorToast("Failed to create package");
+    },
   });
 
   const form = useForm({
     defaultValues: {
-      name: '',
-      description: '',
-      price: '',
-      durationWeeks: '4',
-      status: 'DRAFT' as 'DRAFT' | 'ACTIVE'
+      name: "",
+      description: "",
+      price: "",
+      durationWeeks: "4",
+      status: "DRAFT" as "DRAFT" | "ACTIVE",
     },
     onSubmit: async ({ value }) => {
       const parsed = createPackageSchema.safeParse(value);
       if (!parsed.success) {
-        showErrorToast(parsed.error.issues[0]?.message ?? 'Invalid package form');
+        showErrorToast(
+          parsed.error.issues[0]?.message ?? "Invalid package form",
+        );
         return;
       }
 
       await createMutation.mutateAsync(parsed.data);
-    }
+
+      if (createMutation.isSuccess) {
+        form.reset({
+          name: "",
+          description: "",
+          price: "",
+          durationWeeks: "4",
+          status: "DRAFT",
+        });
+      }
+    },
   });
 
   if (query.isPending) {
-    return <section className="rounded-lg border border-border bg-card p-6">Loading wellness packages...</section>;
+    return (
+      <section className="rounded-lg border border-border bg-card p-6">
+        Loading wellness packages...
+      </section>
+    );
   }
 
   if (query.isError) {
-    return <section className="rounded-lg border border-border bg-card p-6">Failed to load wellness packages.</section>;
+    return (
+      <section className="rounded-lg border border-border bg-card p-6">
+        Failed to load wellness packages.
+      </section>
+    );
   }
 
   return (
     <section className="space-y-4 text-card-foreground">
       <div className="rounded-lg border border-border bg-card p-6">
         <h1 className="text-xl font-semibold">Create Wellness Package</h1>
-        <p className="text-sm text-muted-foreground">Admin can create package records from this form.</p>
+        <p className="text-sm text-muted-foreground">
+          Admin can create package records from this form.
+        </p>
 
         <form
           className="mt-4 grid gap-3"
@@ -96,7 +128,10 @@ export default function WellnessPackagesPage(): JSX.Element {
             {(field) => (
               <label className="grid gap-1 text-sm">
                 <span className="text-muted-foreground">Name</span>
-                <Input value={field.state.value} onChange={(event) => field.handleChange(event.target.value)} />
+                <Input
+                  value={field.state.value}
+                  onChange={(event) => field.handleChange(event.target.value)}
+                />
               </label>
             )}
           </form.Field>
@@ -133,7 +168,9 @@ export default function WellnessPackagesPage(): JSX.Element {
             <form.Field name="durationWeeks">
               {(field) => (
                 <label className="grid gap-1 text-sm">
-                  <span className="text-muted-foreground">Duration (weeks)</span>
+                  <span className="text-muted-foreground">
+                    Duration (weeks)
+                  </span>
                   <Input
                     type="number"
                     min="1"
@@ -141,6 +178,11 @@ export default function WellnessPackagesPage(): JSX.Element {
                     value={field.state.value}
                     onChange={(event) => field.handleChange(event.target.value)}
                   />
+                  {Number(field.state.value) > 52 && (
+                    <span className="text-sm text-destructive">
+                      Duration cannot exceed 52 weeks
+                    </span>
+                  )}
                 </label>
               )}
             </form.Field>
@@ -152,7 +194,11 @@ export default function WellnessPackagesPage(): JSX.Element {
                   <select
                     className="h-10 rounded-md border border-input bg-background px-3 text-sm"
                     value={field.state.value}
-                    onChange={(event) => field.handleChange(event.target.value as 'DRAFT' | 'ACTIVE')}
+                    onChange={(event) =>
+                      field.handleChange(
+                        event.target.value as "DRAFT" | "ACTIVE",
+                      )
+                    }
                   >
                     <option value="DRAFT">DRAFT</option>
                     <option value="ACTIVE">ACTIVE</option>
@@ -162,18 +208,26 @@ export default function WellnessPackagesPage(): JSX.Element {
             </form.Field>
           </div>
 
-          <Button type="submit" disabled={createMutation.isPending} className="w-fit">
-            {createMutation.isPending ? 'Creating...' : 'Create Package'}
+          <Button
+            type="submit"
+            disabled={createMutation.isPending}
+            className="w-fit"
+          >
+            {createMutation.isPending ? "Creating..." : "Create Package"}
           </Button>
         </form>
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6">
         <h2 className="text-lg font-semibold">Wellness Packages</h2>
-        <p className="text-sm text-muted-foreground">Total: {query.data.pagination.total}</p>
+        <p className="text-sm text-muted-foreground">
+          Total: {query.data.pagination.total}
+        </p>
         <div className="mt-3">
           {query.data.items.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No wellness packages found.</p>
+            <p className="text-sm text-muted-foreground">
+              No wellness packages found.
+            </p>
           ) : (
             <Table>
               <TableHeader>
@@ -190,7 +244,9 @@ export default function WellnessPackagesPage(): JSX.Element {
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>{item.status}</TableCell>
                     <TableCell>{item.durationWeeks} weeks</TableCell>
-                    <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">
+                      ${item.price.toFixed(2)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
