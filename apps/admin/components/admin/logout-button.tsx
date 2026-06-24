@@ -4,7 +4,6 @@ import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
-import { clearTokens } from '../../lib/auth';
 import { showErrorToast, showSuccessToast } from '../../lib/toast';
 import { logout } from '../../features/auth/services/auth.service';
 
@@ -17,13 +16,11 @@ export function LogoutButton({ compact = false }: LogoutButtonProps): JSX.Elemen
   const mutation = useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      clearTokens();
       showSuccessToast('Logged out');
       router.replace('/login');
     },
     onError: () => {
-      clearTokens();
-      showErrorToast('Logout failed, session removed locally.');
+      showErrorToast('Logout failed. Please try again.');
       router.replace('/login');
     }
   });

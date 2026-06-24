@@ -8,7 +8,8 @@ import {
 export function useWellnessPackages(search: string) {
   return useQuery({
     queryKey: ['wellness-packages', search],
-    queryFn: () => fetchWellnessPackages(search)
+    queryFn: () => fetchWellnessPackages(search),
+    placeholderData: (previousData) => previousData
   });
 }
 
