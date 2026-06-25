@@ -26,12 +26,6 @@ paths:
     post:
       operationId: AuthController_refresh
       parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RefreshTokenDto"
       responses:
         "201":
           description: ""
@@ -249,9 +243,6 @@ components:
       type: http
   schemas:
     LoginDto:
-      type: object
-      properties: {}
-    RefreshTokenDto:
       type: object
       properties: {}
     CreateWellnessPackageDto:
